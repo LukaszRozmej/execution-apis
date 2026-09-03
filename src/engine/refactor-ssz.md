@@ -1,7 +1,7 @@
-# Engine API v2 -- SSZ Container Sketches (Amsterdam)
+# Engine API -- SSZ Container Sketches (REST + SSZ, Amsterdam)
 
 > **Status:** Sketch. This is a working draft of the concrete SSZ
-> container definitions referenced by the Engine API v2 spec
+> container definitions referenced by the REST Engine API spec
 > ([refactor.md](./refactor.md)). Field types, names, and `MAX_*`
 > constants are placeholders and need a final review before
 > publication.
@@ -452,7 +452,7 @@ Two points where implementations have diverged, settled here:
 - **Paris shape.** Paris `BuiltPayload` is **not** a bare
   `ExecutionPayload`; it is the `{payload, block_value}` container
   below. (`engine_getPayloadV1` returned a bare payload; `V2`
-  introduced the `{executionPayload, blockValue}` wrapper. The v2 API
+  introduced the `{executionPayload, blockValue}` wrapper. The REST API
   uses the wrapper uniformly from Paris on, so every fork has the same
   outer container and a CL never has to special-case Paris.)
 
@@ -463,7 +463,7 @@ response evolution; see [shanghai.md](./shanghai.md),
 
 | Field | Introduced | Notes |
 | - | - | - |
-| `payload`, `block_value` | Shanghai (`getPayloadV2`) | the wrapper itself; v2 API back-applies it to Paris |
+| `payload`, `block_value` | Shanghai (`getPayloadV2`) | the wrapper itself; REST API back-applies it to Paris |
 | `blobs_bundle` | Cancun (`getPayloadV3`) | `BlobsBundleV1` (single proof) |
 | `should_override_builder` | Cancun (`getPayloadV3`) | introduced alongside `blobs_bundle` — **not** Shanghai |
 | `execution_requests` | Prague (`getPayloadV4`) | placed before `should_override_builder` |
@@ -521,7 +521,7 @@ BuiltPayloadAmsterdam {
 ```
 
 The Amsterdam variant is the one shown in the
-[endpoint section below](#get-forkpayloadspayloadid).
+[endpoint section below](#get-payloadspayloadid).
 
 ### `ExecutionPayloadEnvelope` per fork
 

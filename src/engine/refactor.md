@@ -497,7 +497,7 @@ Content-Length: 41
 <41 bytes: SSZ(PayloadStatus)>
 ```
 
-The 41 bytes break down as: `status` (1 byte = `0x01`, `VALID`) +
+The 41 bytes break down as: `status` (1 byte = `0x00`, `VALID`) +
 `latest_valid_hash` (4-byte offset + 32-byte hash = 36 bytes)
 + `validation_error` (4-byte offset + 0 bytes empty list).
 
@@ -1069,10 +1069,11 @@ decision log for quick scanning.
    per slot) and the new `blockAccessList`.
 2. **Stop the version sprawl.** Today every fork bumps every method that
    touches a changed structure (`engine_newPayload` is at V5,
-   `engine_getPayload` at V6, etc.). The new API puts the fork in the
-   URL (`/engine/v1/...`) so a single endpoint accepts whatever
-   schema that fork mandates; adding a fork = adding one path prefix
-   plus one set of SSZ schemas, not bumping every method name.
+   `engine_getPayload` at V6, etc.). The new API carries the fork in
+   the `Eth-Execution-Version` request header so a single endpoint
+   accepts whatever schema that fork mandates; adding a fork = adding
+   one accepted header value plus one set of SSZ schemas, not bumping
+   every method name.
 3. **Self-contained requests.** No more side-channel parameters
    (`expectedBlobVersionedHashes`, `parentBeaconBlockRoot`,
    `executionRequests`) that travel beside the payload — they live
