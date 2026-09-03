@@ -248,9 +248,10 @@ Replaces `engine_getPayloadV{1..6}`.
 Polling semantics are unchanged from `engine_getPayload`: the CL calls
 `GET /payloads/{payloadId}` whenever it wants the latest
 snapshot of the build. Each call returns the most recent version
-available at the time of receipt; the EL MAY stop the build process
-after serving a call. `payloadId` values are opaque server-assigned
-tokens issued by `POST /forkchoice`.
+available at the time of receipt; the EL MAY stop optimising the build
+after serving a call, but **MUST** keep serving that payload for
+subsequent `GET`s against the same `payloadId`. `payloadId` values are
+opaque server-assigned tokens issued by `POST /forkchoice`.
 
 The EL keeps optimising the payload until the slot deadline, so
 successive `GET`s against the same `{payloadId}` may return different
@@ -263,9 +264,10 @@ encoded `Bytes8`. The EL **MUST** validate that the path segment is
 well-formed (8 bytes, hex) before dispatching to lookup logic; a
 malformed segment returns `400 invalid-request`.
 
-**Token TTL.** A `payloadId` is valid until either the payload was
-retrieved by `GET /payloads/{payloadId}` or another payload
-was built via a forkchoice with payload attributes.
+**Token TTL.** A `payloadId` remains valid for repeated `GET`s until
+another payload was built via a forkchoice with payload attributes, or
+until the EL expires the build. A single retrieval does **not**
+invalidate the token — the polling model above depends on it.
 
 ### Historical bodies
 
@@ -1321,9 +1323,9 @@ the summary exists for quick scanning.
 - **`payload_id` is an opaque server-assigned token** issued by
   `POST /forkchoice`. CLs MUST NOT recompute or validate it.
 - **`payload_id` lifetime is build-bound, not time-bound.** A token
-  remains valid until either the payload was retrieved by
-  `GET /payloads/{payloadId}` or another payload was built
-  via a forkchoice with payload attributes.
+  remains valid for repeated retrievals until another payload was
+  built via a forkchoice with payload attributes; serving a
+  `GET /payloads/{payloadId}` does not invalidate it.
 - **`shouldOverrideBuilder`** lives inside the SSZ `BuiltPayload`
   body.
 
